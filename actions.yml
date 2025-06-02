@@ -1,0 +1,8 @@
+name: Setup 2ndlab actions
+description: Setup 2ndlab actions
+runs:
+  using: "composite"
+  steps:
+    - name: Setup 2ndlab actions
+      shell: bash
+      run: echo "Setup 2ndlab actions"
