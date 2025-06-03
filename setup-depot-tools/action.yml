@@ -9,18 +9,22 @@ runs:
         python-version: "3.12"
 
     - name: Cache depot_tools dependencies
-      id: cache-depot-tools
-      uses: actions/cache@v4
+      id: cache-depot-tools-restore
+      uses: actions/cache/restore@v4
       with:
         path: depot_tools
         key: ${{ runner.os }}-depot-tools
 
-    - name: Clone depot tools
+    - name: Check depot_tools cache
+      if: steps.cache-depot-tools-restore.outputs.cache-hit != 'true'
+      shell: bash
+      run: git clone --depth=1 --no-tags --single-branch https://chromium.googlesource.com/chromium/tools/depot_tools.git
+
+    - name: Clean depot_tools
       shell: bash
       run: |
-        if [ ! -d "depot_tools" ]; then
-          git clone --depth=1 --no-tags --single-branch https://chromium.googlesource.com/chromium/tools/depot_tools.git
-        fi
+        cd depot_tools
+        git reset --hard
 
     - name: Setup PATH
       shell: bash
@@ -43,3 +47,11 @@ runs:
     - name: Update depot_tools
       shell: bash
       run: update_depot_tools
+
+    - name: Save depot_tools cache immediately
+      id: cache-depot-tools-save
+      if: always() && steps.cache-depot-tools-restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        key: ${{ steps.cache-depot-tools-restore.outputs.cache-primary-key }}
+        path: depot_tools
