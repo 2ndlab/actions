@@ -20,12 +20,6 @@ runs:
       shell: bash
       run: git clone --depth=1 --no-tags --single-branch https://chromium.googlesource.com/chromium/tools/depot_tools.git
 
-    - name: Clean depot_tools
-      shell: bash
-      run: |
-        cd depot_tools
-        git reset --hard
-
     - name: Setup PATH
       shell: bash
       run: echo "$GITHUB_WORKSPACE/depot_tools" >> $GITHUB_PATH
@@ -47,6 +41,12 @@ runs:
     - name: Update depot_tools
       shell: bash
       run: update_depot_tools
+
+    - name: Clean depot_tools
+      shell: bash
+      run: |
+        cd depot_tools
+        git reset --hard
 
     - name: Save depot_tools cache immediately
       id: cache-depot-tools-save
